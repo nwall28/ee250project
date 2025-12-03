@@ -66,3 +66,5 @@ with torch.no_grad():
     example_img, _ = train_dataset[0]
     example_emb, _ = model(example_img.unsqueeze(0), return_embedding=True)
     print("Embedding shape:", example_emb.shape)
+torch.save(model.state_dict(), "facenet_lfw.pt")
+print("Model saved as facenet_lfw.pt")
