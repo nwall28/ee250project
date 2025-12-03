@@ -1,8 +1,17 @@
+# import kagglehub
+
+# # Download latest version
+# path = kagglehub.dataset_download("jessicali9530/lfw-dataset")
+
+# print("Path to dataset files:", path)
+
 import torch
-import torch.nn as nnimport torch.optim as optim
+import torch.nn as nn
+import torch.optim as optim
 import torchvision
-import torchvision.transforms as transforms
+from torchvision import transforms, datasets, models
 import torch.nn.functional as F
+from torch.utils.data import DataLoader
 
 transform = transforms.Compose(
     [
@@ -12,11 +21,12 @@ transform = transforms.Compose(
     ]
 )
 
-train_dataset = datasets.ImageFolder("data/train", transform=transform)
+train_dataset = datasets.ImageFolder(r"C:\Users\15rak\.cache\kagglehub\datasets\jessicali9530\lfw-dataset\versions\4\lfw-deepfunneled\lfw-deepfunneled", transform=transform)
 train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
 num_classes = len(train_dataset.classes)
-
+print("num_classes:", num_classes)
+print("num_samples:", len(train_dataset))
 backbone = models.resnet18(weights=None)
 backbone.fc = nn.Identity()
 
@@ -34,7 +44,7 @@ class FaceNet(nn.Module):
         emb = F.normalize(self.embedding(x), p=2, dim=1)
         logits = self.classifier(emb)
         if return_embedding:
-            returrn emb, logits
+            return emb, logits
         return logits
 
 model = FaceNet(backbone, embedding_dim, num_classes)
@@ -42,7 +52,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.CrossEntropyLoss()
 
 for epoch in range(10):
-    model.traion()
+    model.train()
     for imgs, labels in train_loader:
         optimizer.zero_grad()
         logits = model(imgs)
@@ -53,6 +63,6 @@ for epoch in range(10):
 
 model.eval()
 with torch.no_grad():
-    example.img, _ = train_dataset[0]
-    example_emb, _ = model(exampple_img.unsqueeze(0), return_embedding=True)
+    example_img, _ = train_dataset[0]
+    example_emb, _ = model(example_img.unsqueeze(0), return_embedding=True)
     print("Embedding shape:", example_emb.shape)
