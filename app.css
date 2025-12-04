@@ -15,3 +15,8 @@ body{
 .id{
     color: red;
 }
+
+#suspect{
+    max-width: 800px;
+    width: 100%;
+}

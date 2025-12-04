@@ -5,7 +5,7 @@ import numpy as np
 
 
 
-def Mp4(dirPath: Path):
+def Mp4(dirPath: Path, server_url = "http://localhost:5000/image"):
     frames1 = process(dirPath)
     name = faceRec(frames1)
     if(name!="Raksheta"):
@@ -49,6 +49,33 @@ def process(path1: Path):
     print("\nFrame extraction complete. Ready for ML comparison.")
     return frame1
 
+def send_frame_to_server(frame, server_url):
+    try:
+        success, buffer = cv2, [cv2.IMWRITE_JPEG_QUALITY, 85]
+        if not success:
+            print("Failed to encode frame")
+            return False
+        img_base64 = base64.b64encode(buffer).decode('utf-8')
+        payload = {
+            'image': img_base64,
+            'format': 'jpeg'
+            }
+        print(f"Sending alert to {server_url}...")
+        response = requests.post(server_url, json=payload, timeout = 10)
+
+        if response.status_code == 201:
+            print("Alert sent successfully.")
+            return True
+        else:
+            print(f"Failed to send alert. Status code: {response.status_code}")
+            return False
+        
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to server.")
+        return False
+    except Exception as e:
+        print(f"Error sending frame to server: {e}")
+        return False
 
             
         
