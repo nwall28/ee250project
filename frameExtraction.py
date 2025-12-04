@@ -10,6 +10,7 @@ def Mp4(dirPath: Path, server_url = "http://localhost:5000/image"):
     name = faceRec(frames1)
     if(name!="Raksheta"):
         print("thief!")
+        #servo slap stick code here
         #have it push something to the website
     else:
         print("safe")

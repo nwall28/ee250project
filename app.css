@@ -1,16 +1,26 @@
 body{
     background-color: black;
+    display: flex;
     height: 100vh;
     width: 100vw;
+    justify-content: center;
+    align-items: center;
 }
 .main-container{
     height: auto;
-    display: inline-block;
+    display: flex;
     width: auto;
+    gap: 2%;
     flex-wrap: nowrap;
     flex-direction: row;
     padding: 10px;
 
+}
+.suspect{
+    padding: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .id{
     color: red;
