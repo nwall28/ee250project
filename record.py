@@ -3,7 +3,7 @@ from collections import deque
 import tempfile, time, datetime as dt
 
 
-from models.frameExtraction import Mp4 # import the process function
+from frameExtraction import Mp4 # import the process function
 
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
@@ -23,7 +23,7 @@ class UltrasonicTrigger:
     
 '''creates a unique timestamp based filename for each recorded video'''
 def ts_name(prefix = "clip", ext = ".mp4"):
-    return f"{prefix}_{dt.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}{ext}"
+    return f"{prefix}_{dt.datetime.now().strftime('%Y%m%d_%H%M%S')}{ext}"
 
 '''declares and configures the camera to a fixed resolution, format'''
 def build_cam():
@@ -56,7 +56,7 @@ def capture_event(cam:Picamera2) -> Path:
 the camera variable, tells us where the clip will be saved, creates a "memory" buffer and runs the loop to wait for trigger, 
 start the camera, call the process function, and ends the process'''
 def main():
-    ultrasonic = UltrasonicTrigger()
+    # ultrasonic = UltrasonicTrigger()
     cam = build_cam()
     cam.start()
 
@@ -64,11 +64,11 @@ def main():
     
 
     try:
-        while True:
-            ultrasonic.trigger_function()
-            clip = capture_event(cam)
-            print(f"saved: {clip}")
-            Mp4(clip)
+        # while True:
+            # ultrasonic.trigger_function()
+        clip = capture_event(cam)
+        print(f"saved: {clip}")
+        Mp4(clip)
             
     except KeyboardInterrupt:
         print("Exiting from issues")
