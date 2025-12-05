@@ -32,6 +32,7 @@ def Mp4(dirPath: Path, server_url = "http://localhost:5000/image"):
         slap_motion(pwm) #call slap motion function
     else:
         print("safe")
+    cleanup_servo(pwm)
     
     
 
@@ -104,9 +105,16 @@ def slap_motion(pwm):
     pwm.ChangeDutyCycle(12.5) #right
     time.sleep(0.2)
     pwm.ChangeDutyCycle(7.5) #neutral
-    time.sleep
+    time.sleep(0.2)
     pwm.ChangeDutyCycle(0) #stop
  
+
+def cleanup_servo(pwm):
+    """Clean up GPIO"""
+    if pwm is not None:
+        pwm.stop()
+        GPIO.cleanup()
+        print("GPIO cleaned up")
             
         
 # def main():
