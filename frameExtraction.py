@@ -1,6 +1,7 @@
 import sys, cv2
 from pathlib import Path
 import numpy as np
+<<<<<<< HEAD
 from faceNetModel import FaceNet
 import torch
 import torch.nn as nn
@@ -11,12 +12,30 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 import os
 from PIL import Image
+=======
+import base64
+import requests
+import time
+
+#servo imports
+import RPi.GPIO as GPIO
+
+SERVO_PIN = 18 #GPIO pin connected to the servo
+
+def setup_servo():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(SERVO_PIN, GPIO.OUT)
+    pwm = GPIO.PWM(SERVO_PIN, 50) #50Hz frequency
+    pwm.start(7.5) #neutral position
+    return pwm
+>>>>>>> ea15ba6b461af63460605eec2a829c9c573dfbcd
 
 device = torch.device("cpu")
 
 backbone = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 backbone.fc = nn.Identity()
 
+<<<<<<< HEAD
 embedding_dim = 128
 num_classes = 5749
 
@@ -35,6 +54,10 @@ transform = transforms.Compose(
 )
 
 def Mp4(dirPath: Path|str):
+=======
+def Mp4(dirPath: Path, server_url = "http://localhost:5000/image"):
+    pwm = setup_servo()
+>>>>>>> ea15ba6b461af63460605eec2a829c9c573dfbcd
     frames1 = process(dirPath)
     cv2.imwrite("saved_image.jpg",frames1)
     # frames1 = cv2.imread("IMG_9783.jpg")
@@ -52,9 +75,16 @@ def Mp4(dirPath: Path|str):
         print(diff)
         #servo slap stick code here
         #have it push something to the website
+        send_frame_to_server(frames1, server_url) #push image and alert to server
+        slap_motion(pwm) #call slap motion function
     else:
+<<<<<<< HEAD
         print("THIEF!")
         print(diff)
+=======
+        print("safe")
+    cleanup_servo(pwm)
+>>>>>>> ea15ba6b461af63460605eec2a829c9c573dfbcd
     
     
 def get_Embedded(frame: np.ndarray):
@@ -100,37 +130,56 @@ def process(path1: Path|str):
     print("\nFrame extraction complete. Ready for ML comparison.")
     return frame1
 
+def send_frame_to_server(frame, server_url):
+    try:
+        success, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        if not success:
+            print("Failed to encode frame")
+            return False
+        img_base64 = base64.b64encode(buffer).decode('utf-8')
+        payload = {
+            'image': img_base64,
+            'format': 'jpeg'
+            }
+        print(f"Sending alert to {server_url}...")
+        response = requests.post(server_url, json=payload, timeout = 10)
 
+        if response.status_code == 201:
+            print("Alert sent successfully.")
+            return True
+        else:
+            print(f"Failed to send alert. Status code: {response.status_code}")
+            return False
+        
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to server.")
+        return False
+    except Exception as e:
+        print(f"Error sending frame to server: {e}")
+        return False
+    
+
+def slap_motion(pwm):
+    print("Slap!")
+    pwm.ChangeDutyCycle(2.5) #left
+    time.sleep(0.2)
+    pwm.ChangeDutyCycle(12.5) #right
+    time.sleep(0.2)
+    pwm.ChangeDutyCycle(7.5) #neutral
+    time.sleep(0.2)
+    pwm.ChangeDutyCycle(0) #stop
+ 
+
+def cleanup_servo(pwm):
+    """Clean up GPIO"""
+    if pwm is not None:
+        pwm.stop()
+        GPIO.cleanup()
+        print("GPIO cleaned up")
             
         
 def main():
     Mp4("Video (11).mov")
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
