@@ -15,11 +15,14 @@ RECORD_SECONDS = 4 #fix this later because our system isn't a set number of seco
 CLIP_DIR = Path(tempfile.gettempdir())/"pi_clips"
 CLIP_DIR.mkdir(parents=True, exists = True)
 
-class UltrasonicTrigger:
-    '''This is just a placeholder right now for when we figure out
-    the details for the ultrasonic GPIO pins and what stalls the video from being recorded'''
-    def trigger_function(self):
-        return
+from gpiozero import DistanceSensor
+ultrasonic = DistanceSensor(echo=8, trigger=23)
+
+
+def trigger_function():
+    if(ultrasonic.distance <= 0.04):
+        return True
+    return False
     
 '''creates a unique timestamp based filename for each recorded video'''
 def ts_name(prefix = "clip", ext = ".mp4"):
@@ -64,11 +67,11 @@ def main():
     
 
     try:
-        # while True:
-            # ultrasonic.trigger_function()
-        clip = capture_event(cam)
-        print(f"saved: {clip}")
-        Mp4(clip)
+        while True:
+            if(trigger_function()):
+                clip = capture_event(cam)
+                print(f"saved: {clip}")
+                Mp4(clip)
             
     except KeyboardInterrupt:
         print("Exiting from issues")
