@@ -127,7 +127,7 @@ def index():
                     .then(res => res.json())
                     .then(data => {{
                         if (data.last_updated > lastUpdate) {{
-                            console.log('New image detected! Refreshing...');
+                            console.log('New thief detected! Refreshing...');
                             location.reload();
                         }}
                     }});
