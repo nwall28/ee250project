@@ -51,7 +51,7 @@ transform = transforms.Compose(
     ]
 )
 
-def Mp4(dirPath: Path|str, server_url: str = "https://haplologic-unsurnamed-kelsi.ngrok-free.dev"):
+def Mp4(dirPath: Path|str, server_url: str = "https://haplologic-unsurnamed-kelsi.ngrok-free.dev/image"):
     frames1 = process(dirPath)
     cv2.imwrite("saved_image.jpg",frames1)
     # frames1 = cv2.imread("IMG_9783.jpg")
