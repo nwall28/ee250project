@@ -1,7 +1,6 @@
 Team Members: Raksheta Kulkarni, Norah Wall
 Github: RakshetaK, nwall28
 
-
 ## Hardware Setup:
 1. Connect Pi Camera
 2. Connect ultrasonic sensor triggor pin to GPIO 23 and echo to GPIO 8
@@ -27,10 +26,14 @@ python record.py
 https://haplologic-unsurnamed-kelsi.ngrok-free.dev/
 
 ## Libraries used:
+- flask
 - pytorch
 - torchvision
+- OpenCV
 - requests
 - base64
 - RPi.GPIO
 - numpy
-- faceNetModel
+- Pillow
+- gpiozero
+- picamera2
