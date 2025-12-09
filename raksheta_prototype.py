@@ -8,6 +8,8 @@ from torch.utils.data import DataLoader
 import os
 from PIL import Image
 
+#generates a embedding vector for owner's face
+
 from faceNetModel import FaceNet
 
 device = torch.device("cpu")
@@ -38,7 +40,7 @@ DIR = "me_images"
 embeddings = [] #vector for specific face
 model.eval()
 with torch.no_grad():
-    for img_name in os.listdir(DIR):
+    for img_name in os.listdir(DIR): #get embeddings for each image in me_images
         img_path = os.path.join(DIR,img_name)
         img = Image.open(img_path).convert("RGB")
 
@@ -48,13 +50,13 @@ with torch.no_grad():
         embeddings.append(emb.squeeze(0))
 if not embeddings:
     raise RuntimeError("no images")
-me_proto = torch.stack(embeddings, dim=0).mean(dim=0)
+me_proto = torch.stack(embeddings, dim=0).mean(dim=0) #get average embedding for face
 me_proto = F.normalize(me_proto, p=2, dim=0)
-torch.save(torch.stack(embeddings, dim=0), "me_bank.pt")
-torch.save(me_proto, "raksheta_prototype.pt")
+torch.save(torch.stack(embeddings, dim=0), "me_bank.pt") #keep all embeddings instead of averaging
+torch.save(me_proto, "raksheta_prototype.pt") #save average embedding
 
 
-for img_name in os.listdir("me_images"):
+for img_name in os.listdir("me_images"): #check the quality [threshold difference] of the images in me_images in relation to the average embedding (does any image stray too far from being helpful to the model?)
     img = Image.open(os.path.join("me_images", img_name)).convert("RGB")
     emb, _ = model(transform(img).unsqueeze(0), return_embedding=True)
     d = torch.norm(me_proto - emb.squeeze(0), p=2).item()

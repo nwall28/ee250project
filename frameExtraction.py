@@ -52,15 +52,14 @@ transform = transforms.Compose(
 )
 
 def Mp4(dirPath: Path|str, server_url: str = "https://haplologic-unsurnamed-kelsi.ngrok-free.dev"):
-    frames1 = process(dirPath)
-    cv2.imwrite("saved_image.jpg",frames1)
-    # frames1 = cv2.imread("IMG_9783.jpg")
-    emb = get_Embedded(frames1)
+    frames1 = process(dirPath) #parse the video and extract the first frame
+    #cv2.imwrite("saved_image.jpg",frames1) # use this only if you want to see the image it took of you
+    emb = get_Embedded(frames1) #get the vector for the person in the frame
    
     me_bank = torch.load("me_bank.pt", map_location=device)
     emb = get_Embedded(frames1)
-    dists = torch.norm(me_bank-emb.unsqueeze(0),p=2,dim=1)
-    diff = dists.min().item()
+    dists = torch.norm(me_bank-emb.unsqueeze(0),p=2,dim=1) #measure the difference between owner embedding vector and person in the frame's embedding vector
+    diff = dists.min().item() #get the minimum difference
 
     THRESH = 1.2
     pwm = setup_servo()
@@ -75,7 +74,7 @@ def Mp4(dirPath: Path|str, server_url: str = "https://haplologic-unsurnamed-kels
         slap_motion(pwm) #call slap motion function
     
     
-def get_Embedded(frame: np.ndarray):
+def get_Embedded(frame: np.ndarray): #perform necessary transformations on the extracted frame to pass into CNN model
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(frame_rgb)
     
@@ -85,9 +84,9 @@ def get_Embedded(frame: np.ndarray):
         emb, _ = model(x,return_embedding=True)
     return emb.squeeze(0)
 
-def process(path1: Path|str):
+def process(path1: Path|str): #extract first frame of video snippet
     frameCount = 0
-    capture1 = cv2.VideoCapture(str(path1)) #analyze key event 1
+    capture1 = cv2.VideoCapture(str(path1)) #analyze event
 
     if not capture1.isOpened():
         raise RuntimeError("Could not open")
@@ -102,9 +101,7 @@ def process(path1: Path|str):
         raise RuntimeError(f"Empty/invalid video(s): {path1.name}")
    
 
-    # get first frame, middle frame, and last frame for both clips (0, 255, 450th frame)
-    
-    
+    # get first frame from video
     capture1.set(cv2.CAP_PROP_POS_FRAMES, 0)
     ret1, frame1 = capture1.read()
     if not ret1:
@@ -113,7 +110,6 @@ def process(path1: Path|str):
     
     capture1.release()
     
-    # cv2.destroyAllWindows()
 
     print("\nFrame extraction complete. Ready for ML comparison.")
     return frame1
@@ -165,8 +161,4 @@ def cleanup_servo(pwm):
         print("GPIO cleaned up")
             
         
-# def main():
-#     Mp4("Video (11).mov")
-# if __name__ == "__main__":
-#     main()
 

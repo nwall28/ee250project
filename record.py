@@ -8,6 +8,7 @@ from frameExtraction import Mp4 # import the process function
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput #mp4 cotainer needs ffmpeg
+from gpiozero import DistanceSensor
 
 RESOLUTION = (1920,1080)
 FPS = 30
@@ -15,7 +16,7 @@ RECORD_SECONDS = 4 #fix this later because our system isn't a set number of seco
 CLIP_DIR = Path(tempfile.gettempdir())/"pi_clips"
 CLIP_DIR.mkdir(parents=True, exists = True)
 
-from gpiozero import DistanceSensor
+
 ultrasonic = DistanceSensor(echo=8, trigger=23)
 
 
@@ -55,7 +56,7 @@ def capture_event(cam:Picamera2) -> Path:
     record_mp4(cam,p,RECORD_SECONDS) #instance of frame length here -> FIX
     return p
 
-'''the main function declares an ultrasonic instance as the trigger for the recording events,
+'''the main function uses ultrasonic function as the trigger for the recording events,
 the camera variable, tells us where the clip will be saved, creates a "memory" buffer and runs the loop to wait for trigger, 
 start the camera, call the process function, and ends the process'''
 def main():
