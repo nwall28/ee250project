@@ -10,7 +10,9 @@ Github: RakshetaK, nwall28
 ## Software Setup:
 # Install dependencies
 python -m venv [your venv name] --system-site-packages
+
 source [your venv name]/bin/activate
+
 pip install torch torchvision opencv-python requests flask picamera2
 
 # if you run into an error that the camera is being used, type the following into your terminal
